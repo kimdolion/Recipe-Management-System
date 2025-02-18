@@ -7,6 +7,7 @@ buildscript {
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$hs.spring.bootVersion"
         classpath "io.spring.gradle:dependency-management-plugin:$hs.spring.dependencyManagementVersion"
+
     }
 }
 
@@ -24,5 +25,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'  // ✅ Add JPA support
+    implementation 'org.springframework.boot:spring-boot-starter-validation'  // ✅ For @NotBlank validation
+    implementation 'com.h2database:h2'  // ✅ Add H2 for local testing (remove if using another DB)
 }
