@@ -1,0 +1,4 @@
+content:
+  - Threads as objects
+  - Runtime type checking
+  - hashCode() and equals()

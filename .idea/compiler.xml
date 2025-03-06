@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.22/9c08ea24c6eb714e2d6170e8122c069a0ba9aacf/lombok-1.18.22.jar" />
+        </processorPath>
+        <module name="Recipe_Management_System.Recipe_Management_System-task-build-tmp.main" />
+        <module name="Recipe_Management_System.Topics-hashCode___and_equals__-Am_I_satisfied.main" />
+        <module name="Recipe_Management_System.Topics-hashCode___and_equals__-Theory.main" />
+        <module name="Recipe_Management_System.Topics-Threads_as_objects-Is_thread_daemon.test" />
+        <module name="Recipe_Management_System.Recipe_Management_System-task.test" />
+        <module name="Recipe_Management_System.Recipe_Management_System-task-build-generated-sources-annotationProcessor-java.test" />
+        <module name="Recipe_Management_System.Recipe_Management_System-task-build-generated-sources-headers-java.test" />
+        <module name="Recipe_Management_System.Topics-Runtime_type_checking-Counting_2D_shapes.main" />
+        <module name="Recipe_Management_System.util.main" />
+        <module name="Recipe_Management_System.Topics-Runtime_type_checking-Sum_of_the_areas.main" />
+        <module name="Recipe_Management_System.Topics-Threads_as_objects-Theory.main" />
+        <module name="Recipe_Management_System.Recipe_Management_System-task-build-generated-sources-headers-java.main" />
+        <module name="Recipe_Management_System.Recipe_Management_System-task-build-reports-tests.main" />
+        <module name="Recipe_Management_System.Topics-Runtime_type_checking-Who_is_who.main" />
+        <module name="Recipe_Management_System.Recipe_Management_System-task.main" />
+        <module name="Recipe_Management_System.Recipe_Management_System-task-build-classes-java.main" />
+        <module name="Recipe_Management_System.Recipe_Management_System-task-build-generated-sources-annotationProcessor-java.main" />
+        <module name="Recipe_Management_System.Topics-Runtime_type_checking-Theory.test" />
+        <module name="Recipe_Management_System.Topics-Runtime_type_checking-Select_statements.test" />
+        <module name="Recipe_Management_System.Recipe_Management_System-task-build-test-results.main" />
+        <module name="Recipe_Management_System.Topics-Runtime_type_checking-Counting_2D_shapes.test" />
+        <module name="Recipe_Management_System.Topics-Runtime_type_checking-Who_is_who.test" />
+        <module name="Recipe_Management_System.Topics-Threads_as_objects-Is_thread_daemon.main" />
+        <module name="Recipe_Management_System.Topics-hashCode___and_equals__-A_pair_of_methods_to_be_overridden.main" />
+        <module name="Recipe_Management_System.Topics-hashCode___and_equals__-Theory.test" />
+        <module name="Recipe_Management_System.Recipe_Management_System-task-build-tmp.test" />
+        <module name="Recipe_Management_System.Topics-hashCode___and_equals__-Am_I_satisfied.test" />
+        <module name="Recipe_Management_System.Recipe_Management_System-task-build-classes-java.test" />
+        <module name="Recipe_Management_System.Topics-hashCode___and_equals__-A_pair_of_methods_to_be_overridden.test" />
+        <module name="Recipe_Management_System.Topics-hashCode___and_equals__-Complex_numbers.main" />
+        <module name="Recipe_Management_System.Topics-Runtime_type_checking-Theory.main" />
+        <module name="Recipe_Management_System.Topics-hashCode___and_equals__-Complex_numbers.test" />
+        <module name="Recipe_Management_System.Topics-Runtime_type_checking-Select_statements.main" />
+        <module name="Recipe_Management_System.Topics-Threads_as_objects-Theory.test" />
+        <module name="Recipe_Management_System.util.test" />
+        <module name="Recipe_Management_System.Recipe_Management_System-task-build-reports-tests.test" />
+        <module name="Recipe_Management_System.Recipe_Management_System-task-build-test-results.test" />
+        <module name="Recipe_Management_System.Topics-Runtime_type_checking-Sum_of_the_areas.test" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="17" />
+  </component>
+</project>

@@ -1,0 +1,34 @@
+<div class="step-text">
+<p></p><p>Here's a class named <code class="language-java">BlackBox</code>. It overrides the <code class="language-java">equals</code> and <code class="language-java">hashCode</code> methods.<br/><br/>Which restrictions for the <code class="language-java">equals</code> method are met?</p><pre><code class="language-java">public class BlackBox {
+
+    private final int additive;
+    private int input1;
+    private int input2;
+
+
+    public BlackBox(int add){
+        additive = add;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return  false;
+
+
+        if (obj == null || !(obj instanceof BlackBox)) return false;
+
+        BlackBox that = (BlackBox) obj;
+
+        return  additive == that.additive
+                &amp;&amp;
+                input1 == that.input1
+                &amp;&amp;
+                input2 == that.input2;
+    }
+}</code></pre>
+</div>
