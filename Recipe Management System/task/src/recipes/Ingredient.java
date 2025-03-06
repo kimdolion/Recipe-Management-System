@@ -3,22 +3,23 @@ package recipes;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "DIRECTIONS")
-public class Direction {
+@Table(name = "INGREDIENTS")
+public class Ingredient {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String step;
+    private String name;
 
     @ManyToOne
     @JoinColumn(name = "RECIPE_ID", nullable = false)
     private Recipe recipe;
 
-    public Direction() {}
+    public Ingredient() {}
 
-    public Direction(String step) {
-        this.step = step;
+    public Ingredient(String name) {
+        this.name = name;
     }
 
     public Long getId() {
@@ -29,12 +30,12 @@ public class Direction {
         this.id = id;
     }
 
-    public String getStep() {
-        return step;
+    public String getName() {
+        return name;
     }
 
-    public void setStep(String step) {
-        this.step = step;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Recipe getRecipe() {
