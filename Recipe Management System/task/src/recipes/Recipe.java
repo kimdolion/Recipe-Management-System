@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,10 @@ public class Recipe {
     @Column(name = "DESCRIPTION")
     private String description;
 
+    @NotBlank
+    @Column(name = "CATEGORY")
+    private String category;
+
     @NotEmpty
     @Column(name = "INGREDIENTS")
     private List<String> ingredients;
@@ -33,17 +39,23 @@ public class Recipe {
     @Column(name = "DIRECTIONS")
     private List<String> directions;
 
+    @Column(name= "DATE")
+    private LocalDateTime date;
+
     public Recipe() {
         this.ingredients = new ArrayList<>();
         this.directions = new ArrayList<>();
+        this.date = LocalDateTime.now();
     }
 
 
-    public Recipe(String name, String description, List<String> ingredients, List<String> directions) {
+    public Recipe(String name, String category, String description, List<String> ingredients, List<String> directions) {
         this.name = name;
+        this.category = category;
         this.description = description;
         this.ingredients = ingredients;
         this.directions = directions;
+        this.date = LocalDateTime.now();
     }
 
     // Getters and Setters
@@ -85,5 +97,21 @@ public class Recipe {
 
     public void setDirections(List<String> directions) {
         this.directions = directions;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

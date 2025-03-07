@@ -1,11 +1,14 @@
 package recipes;
 
 import jakarta.validation.Valid;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -42,10 +45,49 @@ public class RecipeController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateRecipe(@PathVariable long id, @Valid @RequestBody Recipe updatedRecipe) {
+        return recipeRepository.findById(id)
+                .map(recipe -> {
+                    recipe.setName(updatedRecipe.getName());
+                    recipe.setCategory(updatedRecipe.getCategory());
+                    recipe.setDescription(updatedRecipe.getDescription());
+                    recipe.setIngredients(updatedRecipe.getIngredients());
+                    recipe.setDirections(updatedRecipe.getDirections());
+                    recipeRepository.save(recipe);
+                    return ResponseEntity.noContent().build();
+                })
+                .orElseThrow(() -> new RecipeNotFoundException(id));
+    }
+
+    @GetMapping("/search/")
+    public ResponseEntity<List<Recipe>> searchRecipes(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String name) throws BadRequestException {
+
+        List<Recipe> recipes = List.of();
+
+        if (category == null && name == null) {
+            throw new BadRequestException();
+        }
+        if (category != null) {
+            recipes = recipeRepository.findByCategoryIgnoreCase(category);
+        }
+        if (name != null) {
+            recipes = recipeRepository.findByNameContainingIgnoreCase(name);
+        }
+
+        recipes.sort(Comparator.comparing(Recipe::getDate).reversed());
+        return ResponseEntity.ok(recipes);
+    }
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public static class RecipeNotFoundException extends RuntimeException {
         public RecipeNotFoundException(long id) {
             super("Recipe with ID " + id + " not found.");
+        }
+        public RecipeNotFoundException(String searchParam) {
+            super("Recipe with search " + searchParam + " not found.");
         }
     }
 
