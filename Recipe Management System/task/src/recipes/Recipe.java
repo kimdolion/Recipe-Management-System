@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +12,10 @@ import java.util.List;
 @Entity
 @Table(name = "RECIPES")
 public class Recipe {
+    @ManyToOne
+    @JoinColumn(name = "user_email")
+    private AppUser appUser;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID", nullable = false)
@@ -41,6 +44,8 @@ public class Recipe {
 
     @Column(name= "DATE")
     private LocalDateTime date;
+
+    private String ownerEmail;
 
     public Recipe() {
         this.ingredients = new ArrayList<>();
@@ -113,5 +118,21 @@ public class Recipe {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public AppUser getUser() {
+        return appUser;
+    }
+
+    public void setUser(AppUser appUser) {
+        this.appUser = appUser;
+    }
+
+    public String getOwnerEmail() {
+        return ownerEmail;
+    }
+
+    public void setOwnerEmail(String ownerEmail) {
+        this.ownerEmail = ownerEmail;
     }
 }

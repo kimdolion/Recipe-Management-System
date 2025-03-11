@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
@@ -12,55 +14,50 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/recipe")
+@RequestMapping("/api")
 public class RecipeController {
 
-    private final RecipeRepository recipeRepository;
+    private final UserService userService;
+    private final RecipeService recipeService;
 
-    public RecipeController(RecipeRepository recipeRepository) {
-        this.recipeRepository = recipeRepository;
+    public RecipeController(UserService userService, RecipeService recipeService) {
+        this.userService = userService;
+        this.recipeService = recipeService;
     }
 
-    @PostMapping("/new")
+    // Register appUser endpoint
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody AppUser appUser) {
+        if (!userService.isUserRegistered(appUser.getUsername())) {
+            userService.registerUser(appUser.getUsername(), appUser.getPassword());
+            return ResponseEntity.ok("AppUser registered successfully");
+        } else {
+            return ResponseEntity.badRequest().body("AppUser already exists");
+        }
+    }
+
+    @PostMapping("/recipe/new")
     public ResponseEntity<Map<String, Long>> postRecipe(@Valid @RequestBody Recipe recipe) {
-        Recipe newRecipe = recipeRepository.save(recipe);
+        String username = getAuthenticatedUsername();
+        Recipe newRecipe = recipeService.addRecipe(username, recipe);
         Map<String, Long> response = new HashMap<>();
         response.put("id", newRecipe.getId());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Recipe> getRecipe(@PathVariable long id) {
-        return recipeRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new RecipeNotFoundException(id));
+    @DeleteMapping("/recipe/{id}")
+    public ResponseEntity<String> deleteRecipe(@PathVariable Long id, @RequestParam Long userId) {
+        recipeService.deleteRecipe(id, String.valueOf(userId));
+        return ResponseEntity.ok("Recipe deleted");
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRecipe(@PathVariable long id) {
-        if (!recipeRepository.existsById(id)) {
-            throw new RecipeNotFoundException(id);
-        }
-        recipeRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/recipe/{id}")
+    public ResponseEntity<String> updateRecipe(@PathVariable Long id, @RequestParam Long userId, @Valid @RequestBody Recipe recipe) {
+        recipeService.updateRecipe(id, String.valueOf(userId), recipe);
+        return ResponseEntity.ok("Recipe updated");
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateRecipe(@PathVariable long id, @Valid @RequestBody Recipe updatedRecipe) {
-        return recipeRepository.findById(id)
-                .map(recipe -> {
-                    recipe.setName(updatedRecipe.getName());
-                    recipe.setCategory(updatedRecipe.getCategory());
-                    recipe.setDescription(updatedRecipe.getDescription());
-                    recipe.setIngredients(updatedRecipe.getIngredients());
-                    recipe.setDirections(updatedRecipe.getDirections());
-                    recipeRepository.save(recipe);
-                    return ResponseEntity.noContent().build();
-                })
-                .orElseThrow(() -> new RecipeNotFoundException(id));
-    }
-
-    @GetMapping("/search/")
+    @GetMapping("/recipe/search/")
     public ResponseEntity<List<Recipe>> searchRecipes(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String name) throws BadRequestException {
@@ -71,10 +68,10 @@ public class RecipeController {
             throw new BadRequestException();
         }
         if (category != null) {
-            recipes = recipeRepository.findByCategoryIgnoreCase(category);
+            recipes = recipeService.getRecipesByCategory(category);
         }
         if (name != null) {
-            recipes = recipeRepository.findByNameContainingIgnoreCase(name);
+            recipes = recipeService.getRecipesByName(name);
         }
 
         recipes.sort(Comparator.comparing(Recipe::getDate).reversed());
@@ -94,5 +91,10 @@ public class RecipeController {
     @ExceptionHandler(RecipeNotFoundException.class)
     public ResponseEntity<String> handleRecipeNotFoundException(RecipeNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    private String getAuthenticatedUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 }
