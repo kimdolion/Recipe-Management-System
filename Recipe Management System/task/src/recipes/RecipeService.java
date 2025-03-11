@@ -25,7 +25,7 @@ public class RecipeService {
         return recipeRepository.findById(id);
     }
 
-    public Recipe addRecipe(String username, Recipe recipe) {
+    public Recipe addRecipe(Recipe recipe) {
         return recipeRepository.save(recipe);
     }
 
@@ -37,22 +37,33 @@ public class RecipeService {
         return new ArrayList<>(recipeRepository.findByCategoryIgnoreCase(category));
     }
 
+    public List<Recipe> getRecipesByAuthor(String email) {
+        return recipeRepository.findByAuthorEmailIgnoreCase(email);
+    }
+
     public void deleteRecipe(Long recipeId, String email) {
         Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(() -> new RecipeController.RecipeNotFoundException(recipeId));
-        if (!recipe.getOwnerEmail().equals(email)) {
-            throw new RecipeController.RecipeNotFoundException("You are not the author of this recipe.");
+        if (!recipe.getAuthor().getEmail().equals(email)) {
+            throw new UnauthorizedActionException("You are not the author of this recipe.");
         }
         recipeRepository.delete(recipe);
     }
 
-    public void updateRecipe(Long recipeId, String ownerEmail, Recipe updatedRecipe) {
+    public void updateRecipe(Long recipeId, String email, Recipe updatedRecipe) {
         Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(() -> new RecipeController.RecipeNotFoundException(recipeId));
-        if (!recipe.getOwnerEmail().equals(ownerEmail)) {
-            throw new RecipeController.RecipeNotFoundException("You are not the author of this recipe.");
+        if (!recipe.getAuthor().getEmail().equals(email)) {
+            throw new UnauthorizedActionException("You are not the author of this recipe.");
         }
         recipe.setName(updatedRecipe.getName());
         recipe.setIngredients(updatedRecipe.getIngredients());
         recipe.setDirections(updatedRecipe.getDirections());
         recipeRepository.save(recipe);
     }
+
+    public class UnauthorizedActionException extends RuntimeException {
+        public UnauthorizedActionException(String message) {
+            super(message);
+        }
+    }
+
 }

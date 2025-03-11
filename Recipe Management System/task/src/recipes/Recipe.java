@@ -12,8 +12,9 @@ import java.util.List;
 @Entity
 @Table(name = "RECIPES")
 public class Recipe {
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "user_email")
+    @JoinColumn(name = "author_email", nullable = false)
     private AppUser appUser;
 
     @Id
@@ -44,8 +45,6 @@ public class Recipe {
 
     @Column(name= "DATE")
     private LocalDateTime date;
-
-    private String ownerEmail;
 
     public Recipe() {
         this.ingredients = new ArrayList<>();
@@ -120,19 +119,11 @@ public class Recipe {
         this.category = category;
     }
 
-    public AppUser getUser() {
+    public AppUser getAuthor() {
         return appUser;
     }
 
-    public void setUser(AppUser appUser) {
+    public void setAuthor(AppUser appUser) {
         this.appUser = appUser;
-    }
-
-    public String getOwnerEmail() {
-        return ownerEmail;
-    }
-
-    public void setOwnerEmail(String ownerEmail) {
-        this.ownerEmail = ownerEmail;
     }
 }

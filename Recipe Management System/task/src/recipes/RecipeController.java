@@ -4,14 +4,12 @@ import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -28,8 +26,8 @@ public class RecipeController {
     // Register appUser endpoint
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody AppUser appUser) {
-        if (!userService.isUserRegistered(appUser.getUsername())) {
-            userService.registerUser(appUser.getUsername(), appUser.getPassword());
+        if (!userService.isUserRegistered(appUser.getEmail())) {
+            userService.registerUser(appUser.getEmail(), appUser.getPassword());
             return ResponseEntity.ok("AppUser registered successfully");
         } else {
             return ResponseEntity.badRequest().body("AppUser already exists");
@@ -37,23 +35,32 @@ public class RecipeController {
     }
 
     @PostMapping("/recipe/new")
-    public ResponseEntity<Map<String, Long>> postRecipe(@Valid @RequestBody Recipe recipe) {
-        String username = getAuthenticatedUsername();
-        Recipe newRecipe = recipeService.addRecipe(username, recipe);
-        Map<String, Long> response = new HashMap<>();
-        response.put("id", newRecipe.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<String> postRecipe(@RequestBody Recipe recipe, @AuthenticationPrincipal AppUser user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User must be logged in");
+        }
+
+        recipe.setAuthor(user);
+        recipeService.addRecipe(recipe);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Recipe created successfully");
     }
 
+    @Transactional
     @DeleteMapping("/recipe/{id}")
-    public ResponseEntity<String> deleteRecipe(@PathVariable Long id, @RequestParam Long userId) {
-        recipeService.deleteRecipe(id, String.valueOf(userId));
+    public ResponseEntity<String> deleteRecipe(@PathVariable Long id, @AuthenticationPrincipal AppUser user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User must be logged in");
+        }
+        recipeService.deleteRecipe(id, String.valueOf(user.getEmail()));
         return ResponseEntity.ok("Recipe deleted");
     }
 
     @PutMapping("/recipe/{id}")
-    public ResponseEntity<String> updateRecipe(@PathVariable Long id, @RequestParam Long userId, @Valid @RequestBody Recipe recipe) {
-        recipeService.updateRecipe(id, String.valueOf(userId), recipe);
+    public ResponseEntity<String> updateRecipe(@PathVariable Long id, @Valid @RequestBody Recipe recipe, @AuthenticationPrincipal AppUser user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User must be logged in");
+        }
+        recipeService.updateRecipe(id, String.valueOf(user.getEmail()), recipe);
         return ResponseEntity.ok("Recipe updated");
     }
 
@@ -83,6 +90,7 @@ public class RecipeController {
         public RecipeNotFoundException(long id) {
             super("Recipe with ID " + id + " not found.");
         }
+
         public RecipeNotFoundException(String searchParam) {
             super("Recipe with search " + searchParam + " not found.");
         }
@@ -93,8 +101,9 @@ public class RecipeController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    private String getAuthenticatedUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
+    @ExceptionHandler(RecipeService.UnauthorizedActionException.class)
+    public ResponseEntity<String> handleUnauthorizedAction(RecipeService.UnauthorizedActionException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
+
 }
